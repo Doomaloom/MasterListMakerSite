@@ -24,7 +24,7 @@ def add_time_headers(ws):
         ws.insert_rows(r)
         cell = ws.cell(r, 1)
         cell.value = time_val
-        cell.alignment = Alignment(horizontal="center", vertical="center")
+        #cell.alignment = Alignment(horizontal="center", vertical="center")
 
 def add_course_headers(ws):
     prev_course = None
@@ -107,6 +107,7 @@ def process_csv(df, options, instructors_classes):
             if ws1.cell(i, 2).value is None and ':' in str(ws1.cell(i, 1).value):
                 ws1.merge_cells(start_row=i, start_column=1, end_row=i, end_column=7)
                 ws1.row_dimensions[i].height = 20
+                ws1.cell(i, 1).alignment = Alignment(horizontal="center", vertical="center")
     
     if options.get('center_course'):
         for i in range(2, max_rows):
@@ -114,6 +115,7 @@ def process_csv(df, options, instructors_classes):
                 ws1.merge_cells(start_row=i, start_column=1, end_row=i,
                                 end_column=7)
                 ws1.row_dimensions[i].height = 20
+                ws1.cell(i, 1).alignment = Alignment(horizontal="center", vertical="center")
             
     if options.get('borders'):
         print("poop")
