@@ -209,7 +209,7 @@
       function updateFormattingOptions() {
         const timeHeaders = document.getElementById('time_headers');
         const courseHeaders = document.getElementById('course_headers');
-
+        const borders = document.getElementById('borders');
         const boldTime = document.getElementById('bold_time');
         const centerTime = document.getElementById('center_time');
         const boldCourse = document.getElementById('bold_course');
@@ -220,6 +220,7 @@
         centerTime.disabled = !timeHeaders.checked;
         boldCourse.disabled = !courseHeaders.checked;
         centerCourse.disabled = !courseHeaders.checked;
+        borders.disabled = !timeHeaders.checked;
       }
 
       // ----- POPULATE SAVED SETTINGS FROM COOKIES -----
@@ -247,7 +248,7 @@
             document.getElementById('time_headers').checked = options.time_headers;
             document.getElementById('course_headers').checked = options.course_headers;
             document.querySelector('input[name="instructor_headers"]').checked = options.instructor_headers;
-            document.querySelector('input[name="boarders"]').checked = options.boarders;
+            document.querySelector('input[name="borders"]').checked = options.boarders;
             document.getElementById('center_time').checked = options.center_time;
             document.getElementById('bold_time').checked = options.bold_time;
             document.getElementById('center_course').checked = options.center_course;
@@ -283,7 +284,7 @@
             time_headers: document.getElementById('time_headers').checked,
             course_headers: document.getElementById('course_headers').checked,
             instructor_headers: document.querySelector('input[name="instructor_headers"]').checked,
-            boarders: document.querySelector('input[name="boarders"]').checked,
+            boarders: document.querySelector('input[name="borders"]').checked,
             center_time: document.getElementById('center_time').checked,
             bold_time: document.getElementById('bold_time').checked,
             center_course: document.getElementById('center_course').checked,
