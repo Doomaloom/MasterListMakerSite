@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Master List Maker</title>
+    <style>
+      /* ----- BASIC RESETS ----- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f5;
+        color: #333;
+        padding: 2rem;
+      }
+      /* ----- HEADER ----- */
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+      }
+      /* ----- FILE DROP ZONE STYLES ----- */
+      .drop-zone {
+        border: 2px dashed #999;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        background-color: #fff;
+      }
+      .drop-zone.hover {
+        background-color: #e8e8e8;
+      }
+      /* ----- UPLOAD BUTTON (Hidden Input Trigger) ----- */
+      .upload-btn {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background-color: #d6c2ff;
+        color: #4a357e;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      .upload-btn:hover {
+        background-color: #c9b8f7;
+      }
+      #file-status {
+        margin-top: 0.5rem;
+        font-style: italic;
+        color: #555;
+      }
+      /* ----- MAIN CONTAINER (FLEX) ----- */
+      .main-container {
+        display: flex;
+        gap: 2rem;
+      }
+      /* ----- LEFT PANEL: INSTRUCTORS ----- */
+      .panel-left {
+        flex: 1;
+        background-color: #d3d3d3;
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .panel-left h2 {
+        margin-bottom: 1rem;
+      }
+      .instructor-entry {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+        align-items: center;
+      }
+      .instructor-entry input {
+        flex: 1;
+        padding: 0.4rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .instructor-entry button.remove-btn {
+        background-color: #ff8080;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+      }
+      .instructor-entry button.remove-btn:hover {
+        background-color: #ff4d4d;
+      }
+      .panel-left button.add-btn {
+        padding: 0.6rem 1.2rem;
+        background-color: #a7a7a7;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .panel-left button.add-btn:hover {
+        background-color: #9b9b9b;
+      }
+      /* ----- RIGHT PANEL: FORMATTING OPTIONS ----- */
+      .panel-right {
+        flex: 1;
+        background-color: #d3d3d3;
+        padding: 1rem;
+        border-radius: 10px;
+      }
+      .panel-right h2 {
+        margin-bottom: 1rem;
+      }
+      .option-group {
+        margin-bottom: 1rem;
+      }
+      .option-group label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .option-group input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+      /* Sub-group styling */
+      .sub-group {
+        background-color: rgba(255, 255, 255, 0.3);
+        padding: 0.8rem;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+      }
+      /* ----- REMEMBER SETTINGS PANEL ----- */
+      .remember-panel {
+        background-color: #e6e6e6;
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+      }
+      /* ----- DISABLED STYLING ----- */
+      input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      /* ----- SUBMIT BUTTON ----- */
+      .submit-btn {
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        background-color: #4a357e;
+        color: #fff;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .submit-btn:hover {
+        background-color: #3f2c6f;
+      }
+    </style>
+
+    <script>
+      // ----- COOKIE FUNCTIONS -----
+      function setCookie(name, value, days) {
+        let expires = "";
+        if (days) {
+          const date = new Date();
+          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+          expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+      }
+
+      function getCookie(name) {
+        const cookieArr = document.cookie.split(";");
+        for (let i = 0; i < cookieArr.length; i++) {
+          const cookiePair = cookieArr[i].trim();
+          if (cookiePair.indexOf(name + "=") === 0) {
+            return decodeURIComponent(cookiePair.substring(name.length + 1));
+          }
+        }
+        return null;
+      }
+
+      // ----- INSTRUCTOR FIELDS MANAGEMENT -----
+      function addInstructorField(name = "", codes = "") {
+        const container = document.getElementById('instructor-fields');
+        const div = document.createElement('div');
+        div.className = "instructor-entry";
+        div.innerHTML = `
+          <input type="text" name="instructor_names[]" placeholder="Instructor Name" value="${name}">
+          <input type="text" name="instructor_codes[]" placeholder="Classes (comma separated)" value="${codes}">
+          <button type="button" class="remove-btn" onclick="removeInstructorField(this)">Remove</button>
+        `;
+        container.appendChild(div);
+      }
+
+      function removeInstructorField(button) {
+        const container = document.getElementById('instructor-fields');
+        if (container.getElementsByClassName('instructor-entry').length > 1) {
+          button.parentElement.remove();
+        } else {
+          button.parentElement.querySelector('input[name="instructor_names[]"]').value = "";
+          button.parentElement.querySelector('input[name="instructor_codes[]"]').value = "";
+        }
+      }
+
+      // ----- FORMAT OPTIONS MANAGEMENT -----
+      function updateFormattingOptions() {
+        const timeHeaders = document.getElementById('time_headers');
+        const courseHeaders = document.getElementById('course_headers');
+
+        const boldTime = document.getElementById('bold_time');
+        const centerTime = document.getElementById('center_time');
+        const boldCourse = document.getElementById('bold_course');
+        const centerCourse = document.getElementById('center_course');
+
+        // Enable/disable dependent options
+        boldTime.disabled = !timeHeaders.checked;
+        centerTime.disabled = !timeHeaders.checked;
+        boldCourse.disabled = !courseHeaders.checked;
+        centerCourse.disabled = !courseHeaders.checked;
+      }
+
+      // ----- POPULATE SAVED SETTINGS FROM COOKIES -----
+      function populateSavedSettings() {
+        // Populate instructors if saved cookie exists
+        const instructorData = getCookie("instructorData");
+        if (instructorData) {
+          try {
+            const instructors = JSON.parse(instructorData);
+            const container = document.getElementById('instructor-fields');
+            container.innerHTML = ""; // Clear current fields
+            instructors.forEach(item => {
+              addInstructorField(item.name, item.codes);
+            });
+          } catch (e) {
+            console.error("Error parsing instructorData cookie", e);
+          }
+        }
+
+        // Populate formatting options if saved cookie exists
+        const formatData = getCookie("formatOptions");
+        if (formatData) {
+          try {
+            const options = JSON.parse(formatData);
+            document.getElementById('time_headers').checked = options.time_headers;
+            document.getElementById('course_headers').checked = options.course_headers;
+            document.querySelector('input[name="instructor_headers"]').checked = options.instructor_headers;
+            document.querySelector('input[name="boarders"]').checked = options.boarders;
+            document.getElementById('center_time').checked = options.center_time;
+            document.getElementById('bold_time').checked = options.bold_time;
+            document.getElementById('center_course').checked = options.center_course;
+            document.getElementById('bold_course').checked = options.bold_course;
+          } catch (e) {
+            console.error("Error parsing formatOptions cookie", e);
+          }
+        }
+        // Update dependent options
+        updateFormattingOptions();
+      }
+
+      // ----- SAVE SETTINGS TO COOKIES ON FORM SUBMIT -----
+      function saveSettings() {
+        // Save instructors if user opted in
+        const rememberInstructors = document.getElementById('remember_instructors').checked;
+        if (rememberInstructors) {
+          const entries = [];
+          const rows = document.getElementsByClassName('instructor-entry');
+          for (let row of rows) {
+            const name = row.querySelector('input[name="instructor_names[]"]').value.trim();
+            const codes = row.querySelector('input[name="instructor_codes[]"]').value.trim();
+            if (name) {
+              entries.push({ name: name, codes: codes });
+            }
+          }
+          setCookie("instructorData", JSON.stringify(entries), 365);
+        }
+        // Save formatting options if user opted in
+        const rememberFormatting = document.getElementById('remember_formatting').checked;
+        if (rememberFormatting) {
+          const formatOptions = {
+            time_headers: document.getElementById('time_headers').checked,
+            course_headers: document.getElementById('course_headers').checked,
+            instructor_headers: document.querySelector('input[name="instructor_headers"]').checked,
+            boarders: document.querySelector('input[name="boarders"]').checked,
+            center_time: document.getElementById('center_time').checked,
+            bold_time: document.getElementById('bold_time').checked,
+            center_course: document.getElementById('center_course').checked,
+            bold_course: document.getElementById('bold_course').checked
+          };
+          setCookie("formatOptions", JSON.stringify(formatOptions), 365);
+        }
+      }
+
+      // ----- FILE UPLOAD AND DRAG/DROP HANDLING -----
+      function initFileUpload() {
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('drop-zone');
+        const fileStatus = document.getElementById('file-status');
+
+        // When a file is selected via the file dialog
+        fileInput.addEventListener('change', function() {
+          if (fileInput.files.length) {
+            fileStatus.textContent = "File Uploaded: " + fileInput.files[0].name;
+          } else {
+            fileStatus.textContent = "No file selected.";
+          }
+        });
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
+        // Highlight drop zone when file is dragged over
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropZone.addEventListener(eventName, function() {
+            dropZone.classList.add('hover');
+          });
+        });
+
+        // Remove highlight when drag leaves drop zone
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, function() {
+            dropZone.classList.remove('hover');
+          });
+        });
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', function(e) {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          if (files.length) {
+            fileInput.files = files;
+            fileStatus.textContent = "File Uploaded: " + files[0].name;
+          }
+        });
+
+        // Also allow drop zone click to trigger file dialog
+        dropZone.addEventListener('click', function() {
+          fileInput.click();
+        });
+      }
+
+      window.onload = function() {
+        populateSavedSettings();
+        updateFormattingOptions();
+        initFileUpload();
+        document.getElementById('time_headers').addEventListener('change', updateFormattingOptions);
+        document.getElementById('course_headers').addEventListener('change', updateFormattingOptions);
+        document.getElementById('upload-form').addEventListener('submit', function() {
+          saveSettings();
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>Master List Maker</h1>
+    <!-- Form with ID for JavaScript reference -->
+    <form id="upload-form" method="POST" action="/" enctype="multipart/form-data">
+      <!-- File Drop Zone -->
+      <div id="drop-zone" class="drop-zone">
+        <p>Drag & Drop your .csv file here or click to select</p>
+        <input id="file-input" type="file" name="csv_file" accept=".csv" style="display:none" required>
+      </div>
+      <div id="file-status">No file selected.</div>
+
+      <!-- MAIN FLEX CONTAINER -->
+      <div class="main-container">
+        <!-- LEFT PANEL: Instructors and Classes -->
+        <div class="panel-left">
+          <h2>Instructors and Classes</h2>
+          <div id="instructor-fields">
+            <div class="instructor-entry">
+              <input type="text" name="instructor_names[]" placeholder="Instructor Name">
+              <input type="text" name="instructor_codes[]" placeholder="Classes (comma separated)">
+              <button type="button" class="remove-btn" onclick="removeInstructorField(this)">Remove</button>
+            </div>
+          </div>
+          <button type="button" class="add-btn" onclick="addInstructorField()">Add Instructor</button>
+        </div>
+        <!-- RIGHT PANEL: Formatting Options -->
+        <div class="panel-right">
+          <h2>Formatting Options</h2>
+          <div class="option-group">
+            <label>
+              <input type="checkbox" id="time_headers" name="time_headers">
+              Add Time Headers
+            </label>
+            <label>
+              <input type="checkbox" id="course_headers" name="course_headers">
+              Add Course Headers
+            </label>
+            <label>
+              <input type="checkbox" name="instructor_headers">
+              Add Instructor Headers
+            </label>
+            <label>
+              <input type="checkbox" name="borders">
+              Add Boarders
+            </label>
+          </div>
+          <div class="option-group">
+            <h3>Time Formatting</h3>
+            <div class="sub-group">
+              <label>
+                <input type="checkbox" id="center_time" name="center_time">
+                Centre Time
+              </label>
+              <label>
+                <input type="checkbox" id="bold_time" name="bold_time">
+                Bold Time
+              </label>
+            </div>
+          </div>
+          <div class="option-group">
+            <h3>Course Formatting</h3>
+            <div class="sub-group">
+              <label>
+                <input type="checkbox" id="center_course" name="center_course">
+                Centre Course
+              </label>
+              <label>
+                <input type="checkbox" id="bold_course" name="bold_course">
+                Bold Course
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- REMEMBER SETTINGS OPTIONS -->
+      <div class="remember-panel">
+        <label>
+          <input type="checkbox" id="remember_instructors">
+          Remember Instructors and Classes
+        </label>
+        <br>
+        <label>
+          <input type="checkbox" id="remember_formatting">
+          Remember Formatting Options
+        </label>
+      </div>
+      <!-- SUBMIT BUTTON -->
+      <button type="submit" class="submit-btn">Submit</button>
+    </form>
+  </body>
+</html>
