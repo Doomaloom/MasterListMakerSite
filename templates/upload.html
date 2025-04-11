@@ -248,7 +248,7 @@
             document.getElementById('time_headers').checked = options.time_headers;
             document.getElementById('course_headers').checked = options.course_headers;
             document.querySelector('input[name="instructor_headers"]').checked = options.instructor_headers;
-            document.querySelector('input[name="borders"]').checked = options.boarders;
+            document.getElementById('borders').checked = options.borders;
             document.getElementById('center_time').checked = options.center_time;
             document.getElementById('bold_time').checked = options.bold_time;
             document.getElementById('center_course').checked = options.center_course;
@@ -284,7 +284,7 @@
             time_headers: document.getElementById('time_headers').checked,
             course_headers: document.getElementById('course_headers').checked,
             instructor_headers: document.querySelector('input[name="instructor_headers"]').checked,
-            boarders: document.querySelector('input[name="borders"]').checked,
+            borders: document.querySelector('input[name="borders"]').checked,
             center_time: document.getElementById('center_time').checked,
             bold_time: document.getElementById('bold_time').checked,
             center_course: document.getElementById('center_course').checked,
@@ -402,7 +402,7 @@
             </label>
             <label>
               <input type="checkbox" name="borders">
-              Add Boarders
+              Add Borders
             </label>
           </div>
           <div class="option-group">
