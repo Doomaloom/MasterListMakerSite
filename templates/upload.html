@@ -209,7 +209,6 @@
       function updateFormattingOptions() {
         const timeHeaders = document.getElementById('time_headers');
         const courseHeaders = document.getElementById('course_headers');
-        const borders = document.getElementById('borders');
         const boldTime = document.getElementById('bold_time');
         const centerTime = document.getElementById('center_time');
         const boldCourse = document.getElementById('bold_course');
@@ -220,7 +219,6 @@
         centerTime.disabled = !timeHeaders.checked;
         boldCourse.disabled = !courseHeaders.checked;
         centerCourse.disabled = !courseHeaders.checked;
-        borders.disabled = !timeHeaders.checked;
       }
 
       // ----- POPULATE SAVED SETTINGS FROM COOKIES -----
