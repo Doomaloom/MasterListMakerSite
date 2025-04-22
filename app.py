@@ -62,10 +62,17 @@ def process_csv(df, options, instructors_classes):
             class_to_instructor[clas] = instructor
 
     # Process the CSV file
-    columns_to_keep = ['EventID', 'EventTime', 'Service', 'AttendeeName', 'Phone']
-    df_subset = df[columns_to_keep].copy()
-    df_subset['Instructor'] = df_subset['EventID'].map(class_to_instructor)
-    df_subset = df_subset[['EventID', 'EventTime', 'Instructor', 'Service', 'AttendeeName', 'Phone']]
+    if options.get('roster_by_session'):
+        columns_to_keep = ['EventID', 'EventTime', 'Service', 'AttendeeName', 'Phone']
+        df_subset = df[columns_to_keep].copy()
+        df_subset['Instructor'] = df_subset['EventID'].map(class_to_instructor)
+        df_subset = df_subset[['EventID', 'EventTime', 'Instructor', 'Service', 'AttendeeName', 'Phone']]
+    elif options.get('roster_by_series'):
+        columns_to_keep = ['EventID', 'EventTime', 'ServiceName', 'AttendeeName', 'AttendeePhone']
+        df_subset = df[columns_to_keep].copy()
+        df_subset['Instructor'] = df_subset['EventID'].map(class_to_instructor)
+        df_subset = df_subset[['EventID', 'EventTime', 'Instructor', 'ServiceName', 'AttendeeName', 'AttendeePhone']]
+    
 
     # Save DataFrame to Excel in memory
     output = io.BytesIO()
@@ -195,6 +202,8 @@ def upload():
             'center_course': 'center_course' in request.form,
             'bold_time': 'bold_time' in request.form,
             'bold_course': 'bold_course' in request.form,
+            'roster_by_session': 'roster_by_session' in request.form,
+            'roster_by_series': 'roster_by_series' in request.form,
         }
 
         # ---- Process instructors input ----

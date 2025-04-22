@@ -6,6 +6,11 @@
     <link rel="shortcut icon" href="../public/favicon.ico" type="image/x-icon">
     <link rel="icon" type="image/x-icon" href="../public/favicon.ico">
     <style>
+      table td {
+        padding: 5px;
+        background-color: #093d24;
+      }
+
       /* ----- BASIC RESETS ----- */
       * {
         margin: 0;
@@ -359,6 +364,7 @@
       };
     </script>
   </head>
+  
   <body>
     <h1>Master List Maker</h1>
     <!-- Form with ID for JavaScript reference -->
@@ -388,6 +394,13 @@
         <div class="panel-right">
           <h2>Formatting Options</h2>
           <div class="option-group">
+            <label>
+              <input type="checkbox" id="roster_by_series" name="roster_by_series">
+              Roster By Series 
+              &nbsp;&nbsp;
+              <input type="checkbox" id="roster_by_session" name="roster_by_session">
+              Roster By Session
+            </label>
             <label>
               <input type="checkbox" id="time_headers" name="time_headers">
               Add Time Headers
