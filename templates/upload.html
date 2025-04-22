@@ -167,6 +167,7 @@
     </style>
 
     <script>
+
       // ----- COOKIE FUNCTIONS -----
       function setCookie(name, value, days) {
         let expires = "";
@@ -250,6 +251,8 @@
         if (formatData) {
           try {
             const options = JSON.parse(formatData);
+            document.getElementById('roster_by_session').checked = options.roster_by_session;
+            document.getElementById('roster_by_series').checked = options.roster_by_series;
             document.getElementById('time_headers').checked = options.time_headers;
             document.getElementById('course_headers').checked = options.course_headers;
             document.querySelector('input[name="instructor_headers"]').checked = options.instructor_headers;
@@ -286,6 +289,8 @@
         const rememberFormatting = document.getElementById('remember_formatting').checked;
         if (rememberFormatting) {
           const formatOptions = {
+            roster_by_series: document.getElementById('roster_by_series').checked,
+            roster_by_session: document.getElementById('roster_by_session').checked,
             time_headers: document.getElementById('time_headers').checked,
             course_headers: document.getElementById('course_headers').checked,
             instructor_headers: document.querySelector('input[name="instructor_headers"]').checked,
@@ -401,6 +406,19 @@
               <input type="checkbox" id="roster_by_session" name="roster_by_session">
               Roster By Session
             </label>
+            <script>
+              //series vs session check
+              const seriesCb = document.getElementById('roster_by_series');
+              const sessionCb = document.getElementById('roster_by_session');
+        
+              seriesCb.addEventListener('change', () => {
+                if (seriesCb.checked) sessionCb.checked = false;
+              });
+        
+              sessionCb.addEventListener('change', () => {
+                if (sessionCb.checked) seriesCb.checked = false;
+              });
+              </script>
             <label>
               <input type="checkbox" id="time_headers" name="time_headers">
               Add Time Headers
