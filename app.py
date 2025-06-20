@@ -194,16 +194,16 @@ def upload():
 
         # Get formatting options (checkboxes)
         options = {
-            'time_headers': 'time_headers' in request.form,
-            'course_headers': 'course_headers' in request.form,
-            'instructor_headers': 'instructor_headers' in request.form,
-            'borders': 'borders' in request.form,
-            'center_time': 'center_time' in request.form,
-            'center_course': 'center_course' in request.form,
-            'bold_time': 'bold_time' in request.form,
-            'bold_course': 'bold_course' in request.form,
-            'roster_by_session': 'roster_by_session' in request.form,
-            'roster_by_series': 'roster_by_series' in request.form,
+            'time_headers': 'time_headers' in request.form.getlist('selected_options[]'),
+            'course_headers': 'course_headers' in request.form.getlist('selected_options[]'),
+            'instructor_headers': 'instructor_headers' in request.form.getlist('selected_options[]'),
+            'borders': 'borders' in request.form.getlist('selected_options[]'),
+            'center_time': 'center_time' in request.form.getlist('selected_options[]'),
+            'center_course': 'center_course' in request.form.getlist('selected_options[]'),
+            'bold_time': 'bold_time' in request.form.getlist('selected_options[]'),
+            'bold_course': 'bold_course' in request.form.getlist('selected_options[]'),
+            'roster_by_session': 'roster_by_session' in request.form.getlist('selected_options[]'),
+            'roster_by_series': 'roster_by_series' in request.form.getlist('selected_options[]'),
         }
 
         # ---- Process instructors input ----
